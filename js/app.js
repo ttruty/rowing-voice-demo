@@ -23,6 +23,9 @@ let cbConnected = function() {
             document.querySelector('#monitor-information').textContent = error;
         });
 
+    voiceOver();
+
+
 };
 
 let cbDisconnected = function() {
@@ -31,6 +34,26 @@ let cbDisconnected = function() {
     document.querySelector('#monitor-information').textContent = '';
 };
 
+let voiceOver = function() {
+    console.log('test')
+    let div = document.getElementById(m.type);
+    console.log(div)
+
+    // s.addEventListener('click', function(e) {
+    //     let utterance = new SpeechSynthesisUtterance();
+
+    //      // get span element
+    //      // Set the text and voice of the utterance
+    //      console.log((m.data[k]));
+    //      utterance.text = pm5fields[k].printable(m.data[k]) ;
+    //      //set speech Synthesis voice speed 
+    //      utterance.rate = 0.75;
+    //      utterance.voice = window.speechSynthesis.getVoices()[0];
+    //      // Speak the utterance
+    //      window.speechSynthesis.speak(utterance);
+    //  });
+}
+
 let cbMessage = function(m) {
     let div = document.getElementById(m.type);
     if (!div) {
@@ -38,6 +61,8 @@ let cbMessage = function(m) {
         div.id = m.type;
         document.querySelector('#notifications').appendChild(div);
     }
+
+
 
 
     /* iterate data elements and create / update value */
@@ -61,19 +86,10 @@ let cbMessage = function(m) {
 
                 p.addEventListener('click', function(e) {
                     toggleClass(this, 'highlight');
-                    let utterance = new SpeechSynthesisUtterance();
-
-                    // get span element
-                    // Set the text and voice of the utterance
-                    console.log(pm5fields[k].printable(m.data[k]));
-                    utterance.text = pm5fields[k].printable(m.data[k]) ;
-                    //set speech Synthesis voice speed 
-                    utterance.rate = 0.75;
-                    utterance.voice = window.speechSynthesis.getVoices()[0];
-                    // Speak the utterance
-                    window.speechSynthesis.speak(utterance);
                 });
             }
+
+            
             s.textContent = pm5fields[k].printable(m.data[k]);
         }
     }
@@ -89,25 +105,28 @@ let speakButton = document.getElementById("speak-button");
 // Add an event listener to the speak button
 speakButton.addEventListener("click", function() {
     // Get the text from the text area
-    let text = textArea.value;
-  
-    // Create a new SpeechSynthesisUtterance object
-    let utterance = new SpeechSynthesisUtterance();
-    utterance.rate = .8;
-  
-    // Set the text and voice of the utterance
-    utterance.text = text;
-    utterance.voice = window.speechSynthesis.getVoices()[0];
-  
-    // Speak the utterance
-    window.speechSynthesis.speak(utterance);
-  });
 
+    let divs = document.querySelectorAll("#multiplexed-information [class*='highlight']")
+    divs.forEach(element => {
+        console.log(element.textContent)
+
+        let utterance = new SpeechSynthesisUtterance();
+        utterance.rate = .8;
+    
+        // Set the text and voice of the utterance
+        utterance.text = element.textContent;
+        utterance.voice = window.speechSynthesis.getVoices()[0];
+    
+        // Speak the utterance
+        window.speechSynthesis.speak(utterance);
+    });
+  });
 
     m = new PM5(cbConnecting,
         cbConnected,
         cbDisconnected,
         cbMessage);
+
 
     document.querySelector('#connect').addEventListener('click', function() {
         if (!navigator.bluetooth) {

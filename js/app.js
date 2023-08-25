@@ -161,20 +161,16 @@ let voiceInterval = function() {
 
 let utteranceVoice = function() {
     let divs = document.querySelectorAll("#multiplexed-information [class*='highlight']")
-            divs.forEach(element => {
-                console.log(element.textContent)
+    divs.forEach(element => {
 
-                let utterance = new SpeechSynthesisUtterance();
-                utterance.rate = .8;
+        let utterance = new SpeechSynthesisUtterance(element.textContent);
+        utterance.rate = .8;
+        // utterance.voice = window.speechSynthesis.getVoices()[0];
 
-                // Set the text and voice of the utterance
-                utterance.text = element.textContent;
-                utterance.voice = window.speechSynthesis.getVoices()[0];
-
-                // Speak the utterance
-                window.speechSynthesis.speak(utterance);
-            });
-        };
+        // Speak the utterance
+        window.speechSynthesis.speak(utterance);
+    });
+};
 
 let startTimerStatus = function() {
         clearInterval(timerInterval);

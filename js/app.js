@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
         clearInterval(timerInterval);
         document.getElementById("time-to-speak").innerHTML = "";
         rowingAssistantActive = false;
+        setRowAssistantInactive();
 
         });
     });
@@ -147,11 +148,13 @@ let setRowAssistantInactive = function() {
     clearInterval(timeFireInterval);
     clearInterval(timerInterval);
     document.getElementById("time-to-speak").innerHTML = "";
+    document.getElementById("progressbar-inner").style.width="0%";
 };
 
 let voiceInterval = function() {
     timeFireInterval = setInterval(() => {
         // Set the text and voice of the utterance
+        startTimerStatus();
         utteranceVoice();
         }, selectedTime * 1000);
     };
@@ -174,13 +177,19 @@ let utteranceVoice = function() {
         };
 
 let startTimerStatus = function() {
-    clearInterval(timerInterval);
+        clearInterval(timerInterval);
         timeToSpeak = new Date().getTime() + (selectedTime * 1000);
         timerInterval = setInterval(function() {
-            var now = new Date().getTime(); 
+            var now = new Date().getTime();
+            // get the percent complete
+            
+            
             var distance = timeToSpeak - now;
             var seconds = Math.floor(distance / 1000);
-            document.getElementById("time-to-speak").innerHTML = seconds + "s ";
+            var percentComplete = (seconds / selectedTime) * 100;
+            var percentCompleteString = percentComplete + "%";
+            document.getElementById("progressbar-inner").style.width=percentCompleteString;
+            // document.getElementById("time-to-speak").innerHTML = seconds + "s ";
         }, 1000);
     };
 

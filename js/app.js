@@ -1,5 +1,13 @@
 let m;
 let words_to_say;
+let selectedTime = 60;
+let timeFireInterval;
+var timerInterval;
+// Get the text area and speak button elements
+let textArea = document.getElementById("text");
+let speakButton = document.getElementById("speak-button");
+let justSpeakButton = document.getElementById("just-speak-button");
+let rowingAssistantActive = false;
 
 let cbConnecting = function() {
     document.querySelector('#connect').innerText = 'Connecting';
@@ -22,10 +30,6 @@ let cbConnected = function() {
         .catch(error => {
             document.querySelector('#monitor-information').textContent = error;
         });
-
-    voiceOver();
-
-
 };
 
 let cbDisconnected = function() {
@@ -34,26 +38,6 @@ let cbDisconnected = function() {
     document.querySelector('#monitor-information').textContent = '';
 };
 
-let voiceOver = function() {
-    console.log('test')
-    let div = document.getElementById(m.type);
-    console.log(div)
-
-    // s.addEventListener('click', function(e) {
-    //     let utterance = new SpeechSynthesisUtterance();
-
-    //      // get span element
-    //      // Set the text and voice of the utterance
-    //      console.log((m.data[k]));
-    //      utterance.text = pm5fields[k].printable(m.data[k]) ;
-    //      //set speech Synthesis voice speed 
-    //      utterance.rate = 0.75;
-    //      utterance.voice = window.speechSynthesis.getVoices()[0];
-    //      // Speak the utterance
-    //      window.speechSynthesis.speak(utterance);
-    //  });
-}
-
 let cbMessage = function(m) {
     let div = document.getElementById(m.type);
     if (!div) {
@@ -61,9 +45,6 @@ let cbMessage = function(m) {
         div.id = m.type;
         document.querySelector('#notifications').appendChild(div);
     }
-
-
-
 
     /* iterate data elements and create / update value */
     for (let k in m.data) {
@@ -88,39 +69,41 @@ let cbMessage = function(m) {
                     toggleClass(this, 'highlight');
                 });
             }
-
-            
             s.textContent = pm5fields[k].printable(m.data[k]);
         }
     }
 };
 
 document.addEventListener('DOMContentLoaded', function(e) {
-
-
-// Get the text area and speak button elements
-let textArea = document.getElementById("text");
-let speakButton = document.getElementById("speak-button");
-
-// Add an event listener to the speak button
-speakButton.addEventListener("click", function() {
-    // Get the text from the text area
-
-    let divs = document.querySelectorAll("#multiplexed-information [class*='highlight']")
-    divs.forEach(element => {
-        console.log(element.textContent)
-
-        let utterance = new SpeechSynthesisUtterance();
-        utterance.rate = .8;
+    const timeButtons = document.querySelectorAll('input[name="time"]');
+    speakButton = document.getElementById("speak-button");
+    justSpeakButton = document.getElementById("just-speak-button");
     
-        // Set the text and voice of the utterance
-        utterance.text = element.textContent;
-        utterance.voice = window.speechSynthesis.getVoices()[0];
-    
-        // Speak the utterance
-        window.speechSynthesis.speak(utterance);
+    Array.prototype.forEach.call(timeButtons, function(btn) {
+    btn.addEventListener('change', function(){
+        selectedTime = this.value;
+        clearInterval(timeFireInterval);
+        clearInterval(timerInterval);
+        document.getElementById("time-to-speak").innerHTML = "";
+        rowingAssistantActive = false;
+
+        });
     });
-  });
+
+    justSpeakButton.addEventListener("click", function() {
+        utteranceVoice();
+        });
+
+    // Add an event listener to the speak button
+    speakButton.addEventListener("click", function() {
+        if (!rowingAssistantActive) {
+            startTimerStatus();
+            setRowAssistantActive()
+            voiceInterval();
+        } else {
+            setRowAssistantInactive();
+        }
+    });
 
     m = new PM5(cbConnecting,
         cbConnected,
@@ -153,3 +136,59 @@ speakButton.addEventListener("click", function() {
         document.querySelector('#toggle-instructions').innerText = button_text;
     });
 });
+
+let setRowAssistantInactive = function() {
+    button_text = 'Start Row Assistant';
+    let element = document.querySelector('#speak-button');
+    element.innerText = button_text;
+    element.classList.remove("active-assistant-button");
+    element.classList.add("speak-button");
+    rowingAssistantActive = false;
+    clearInterval(timeFireInterval);
+    clearInterval(timerInterval);
+    document.getElementById("time-to-speak").innerHTML = "";
+};
+
+let voiceInterval = function() {
+    timeFireInterval = setInterval(() => {
+        // Set the text and voice of the utterance
+        utteranceVoice();
+        }, selectedTime * 1000);
+    };
+
+let utteranceVoice = function() {
+    let divs = document.querySelectorAll("#multiplexed-information [class*='highlight']")
+            divs.forEach(element => {
+                console.log(element.textContent)
+
+                let utterance = new SpeechSynthesisUtterance();
+                utterance.rate = .8;
+
+                // Set the text and voice of the utterance
+                utterance.text = element.textContent;
+                utterance.voice = window.speechSynthesis.getVoices()[0];
+
+                // Speak the utterance
+                window.speechSynthesis.speak(utterance);
+            });
+        };
+
+let startTimerStatus = function() {
+    clearInterval(timerInterval);
+        timeToSpeak = new Date().getTime() + (selectedTime * 1000);
+        timerInterval = setInterval(function() {
+            var now = new Date().getTime(); 
+            var distance = timeToSpeak - now;
+            var seconds = Math.floor(distance / 1000);
+            document.getElementById("time-to-speak").innerHTML = seconds + "s ";
+        }, 1000);
+    };
+
+let setRowAssistantActive = function() {
+    button_text = 'Row Assistant Active';
+    let element = document.querySelector('#speak-button');
+    element.innerText = button_text;
+    element.classList.remove("speak-button");
+    element.classList.add("active-assistant-button");
+    rowingAssistantActive = true;
+};

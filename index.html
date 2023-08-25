@@ -15,14 +15,31 @@
 
     <body>
         <div id="controls">
-            <button id="connect">Connect</button>
-            <button id="toggle-instructions">Show instructions</button>
+            <button class="button" id="connect">Connect</button>
+            <button class="button" id="toggle-instructions">Show instructions</button>
+            <button class="button" id="just-speak-button">Test Row Assistant</button>
             <span id="monitor-information"></span>
         </div>
 
         <div id="text-to-speech">
+            <div>
+                <button class="speak-button" id="speak-button">Start Row Assistant</button>
+                <span id="time-to-speak"></span>
+            </div>
+            <form action="">
+                <p>Voice Time (secs):</p>
+                <div  class="radio-toolbar" style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+                    <input type="radio" id="time1" name="time" value="30">
+                    <label for="time1">30</label><br>
+                    <input type="radio" id="time2" name="time" value="60" checked="checked">
+                    <label for="time2">60</label><br>  
+                    <input type="radio" id="time3" name="time" value="90">
+                    <label for="time3">90</label><br>
+                    <input type="radio" id="time4" name="time" value="120">
+                    <label for="time4">120</label><br>
+                </div>
+              </form>
             <!-- <textarea id="text"></textarea> -->
-            <button id="speak-button">Speak</button>
           </div>
 
         <div id="instruction-text" class="hidden">

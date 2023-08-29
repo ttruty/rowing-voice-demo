@@ -178,7 +178,7 @@ let testVoice = function(str) {
 
 let cleanTimeForUtterance = function(str) {
     let speak_string = str;
-    var re = /\d{2}:\d{2}:\d{2}\.\d/;
+    var re = /\d{2}:\d{2}:\d{2}\.\d/; //find the time string
     if (re.test(str)) {
         //split the string into an array of strings
         var splitArray = str.split(':');
@@ -187,9 +187,6 @@ let cleanTimeForUtterance = function(str) {
             const minutes = splitArray[1];
             const seconds = splitArray[2].split('.')[0];
 
-            console.log(hours);
-            console.log(minutes);
-            console.log(seconds);
             hours_string = hours == "00" ? "" : parseInt(hours).toString() + " hours ";
             minutes_string = minutes == "00" ? "" : parseInt(minutes).toString() + " minutes ";
             seconds_string = seconds == "00" ? "" : parseInt(seconds).toString() + " seconds ";

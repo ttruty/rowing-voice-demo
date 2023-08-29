@@ -78,6 +78,10 @@ document.addEventListener('DOMContentLoaded', function(e) {
     const timeButtons = document.querySelectorAll('input[name="time"]');
     speakButton = document.getElementById("speak-button");
     justSpeakButton = document.getElementById("just-speak-button");
+    // textBox = document.getElementById("text");
+    // testButton = document.getElementById("test-speak-button");
+
+
     
     Array.prototype.forEach.call(timeButtons, function(btn) {
     btn.addEventListener('change', function(){
@@ -90,6 +94,10 @@ document.addEventListener('DOMContentLoaded', function(e) {
 
         });
     });
+
+    // testButton.addEventListener("click", function() {
+    //     testVoice(textBox.value);
+    // });
 
     justSpeakButton.addEventListener("click", function() {
         utteranceVoice();
@@ -159,11 +167,45 @@ let voiceInterval = function() {
         }, selectedTime * 1000);
     };
 
+let testVoice = function(str) {
+    let utterance = new SpeechSynthesisUtterance(str);
+    utterance.rate = .8;
+    // utterance.voice = window.speechSynthesis.getVoices()[0];
+
+    // Speak the utterance
+    window.speechSynthesis.speak(utterance);
+};
+
+let cleanTimeForUtterance = function(str) {
+    let speak_string = str;
+    var re = /\d{2}:\d{2}:\d{2}\.\d/;
+    if (re.test(str)) {
+        //split the string into an array of strings
+        var splitArray = str.split(':');
+        if (splitArray.length == 3) {
+            const hours = splitArray[0];
+            const minutes = splitArray[1];
+            const seconds = splitArray[2].split('.')[0];
+
+            console.log(hours);
+            console.log(minutes);
+            console.log(seconds);
+            hours_string = hours == "00" ? "" : parseInt(hours).toString() + " hours ";
+            minutes_string = minutes == "00" ? "" : parseInt(minutes).toString() + " minutes ";
+            seconds_string = seconds == "00" ? "" : parseInt(seconds).toString() + " seconds ";
+
+            speak_string = hours_string + minutes_string + seconds_string;
+        }
+    }
+    return speak_string;
+}
+
+
 let utteranceVoice = function() {
     let divs = document.querySelectorAll("#multiplexed-information [class*='highlight']")
     divs.forEach(element => {
-
-        let utterance = new SpeechSynthesisUtterance(element.textContent);
+        cleaned_string = cleanTimeForUtterance(element.textContent);
+        let utterance = new SpeechSynthesisUtterance(cleaned_string);
         utterance.rate = .8;
         // utterance.voice = window.speechSynthesis.getVoices()[0];
 
